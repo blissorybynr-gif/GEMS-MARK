@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Dashboard — Gems Mark</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav-row">
+    <a href="index.html" class="logo"><img src="https://i.etsystatic.com/62419654/r/isla/fb412b/82714613/isla_500x500.82714613_75ymty06.jpg" alt="Gems Mark — The Elegance" class="logo-img"></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="dashboard.html" class="active">Seller Dashboard</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="account.html">Buyer Account</a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="wrap section" id="dash-root">
+  <p class="small">Loading dashboard…</p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-bottom" style="border-top:none; justify-content:center;">
+    <span>© 2026 Gems Mark. Seller access only.</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/main.js"></script>
+<script>
+  const COURIERS = ["FedEx", "SkyNet Worldwide Express", "UPS", "DHL"];
+  const STATUSES = ["pending","processing","shipped","delivered","cancelled"];
+
+  async function render(){
+    const root = document.getElementById('dash-root');
+    const sb = getSupabase();
+
+    if (!sb){
+      root.innerHTML = `
+        <div class="empty-state">
+          <span class="eyebrow-mark">Seller Dashboard</span>
+          <h1 style="margin:10px 0 14px;">Not Connected Yet</h1>
+          <p class="lede">Connect Supabase (see js/supabase-client.js), then log in here with your seller account to manage orders and tracking.</p>
+          <a href="login.html" class="btn btn-outline" style="margin-top:18px;">Go to Login</a>
+        </div>`;
+      return;
+    }
+
+    const user = await getCurrentUser();
+    if (!user){
+      root.innerHTML = `
+        <div class="empty-state">
+          <span class="eyebrow-mark">Seller Dashboard</span>
+          <h1 style="margin:10px 0 14px;">Please Log In</h1>
+          <p class="lede">Log in with your seller account to manage orders.</p>
+          <a href="login.html" class="btn btn-gold" style="margin-top:18px;">Log In</a>
+        </div>`;
+      return;
+    }
+
+    const { data, error } = await getAllOrders();
+
+    if (error){
+      root.innerHTML = `
+        <div class="empty-state">
+          <span class="eyebrow-mark">Seller Dashboard</span>
+          <h1 style="margin:10px 0 14px;">Access Restricted or No Orders</h1>
+          <p class="lede">${error}</p>
+          <p class="form-note" style="margin-top:10px;">Only accounts with the 'seller' role (set via one SQL command — see supabase-schema.sql) can view all orders.</p>
+        </div>`;
+      return;
+    }
+
+    root.innerHTML = `
+      <div class="section-head">
+        <div>
+          <span class="eyebrow-mark">Seller Dashboard</span>
+          <h1 style="margin-top:8px;">All Orders</h1>
+        </div>
+        <button class="btn btn-outline" onclick="logout()">Log Out</button>
+      </div>
+      <div class="table-wrap" style="margin-top:20px;">
+        <table>
+          <thead><tr><th>Order</th><th>Buyer</th><th>Contact</th><th>City</th><th>Total</th><th>Status</th><th>Courier</th><th>Tracking #</th><th>Save</th></tr></thead>
+          <tbody id="orders-body"></tbody>
+        </table>
+      </div>
+      ${!data.length ? `<div class="empty-state" style="padding-top:40px;"><h3>No orders yet</h3><p class="small">Orders placed on the site will appear here.</p></div>` : ''}
+    `;
+
+    document.getElementById('orders-body').innerHTML = data.map(o => `
+      <tr>
+        <td>#${o.id.slice(0,8)}</td>
+        <td>${o.full_name}</td>
+        <td>${o.email}<br>${o.phone}</td>
+        <td>${o.city}</td>
+        <td>$${Number(o.total_usd).toFixed(2)}</td>
+        <td>
+          <select id="status-${o.id}">
+            ${STATUSES.map(s => `<option value="${s}" ${s===o.status?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </td>
+        <td>
+          <select id="courier-${o.id}">
+            <option value="">—</option>
+            ${COURIERS.map(c => `<option value="${c}" ${c===o.courier?'selected':''}>${c}</option>`).join('')}
+          </select>
+        </td>
+        <td><input type="text" id="tracking-${o.id}" value="${o.tracking_number || ''}" placeholder="Tracking #" style="padding:8px; border:1px solid var(--line); width:130px;"></td>
+        <td><button class="btn btn-outline-gold" style="padding:8px 14px;" onclick="saveOrder('${o.id}')">Save</button></td>
+      </tr>`).join('');
+  }
+
+  async function saveOrder(id){
+    const status = document.getElementById(`status-${id}`).value;
+    const courier = document.getElementById(`courier-${id}`).value || null;
+    const tracking_number = document.getElementById(`tracking-${id}`).value || null;
+    const { error } = await updateOrderStatus(id, { status, courier, tracking_number });
+    if (error){ alert(error); } else { alert('Order updated — the buyer will see this on their account page.'); }
+  }
+
+  async function logout(){
+    await signOutBuyer();
+    window.location.href = 'index.html';
+  }
+
+  render();
+</script>
+</body>
+</html>

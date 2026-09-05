@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Gems Mark</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .co-wrap{ display:grid; grid-template-columns: 1.2fr 1fr; gap: 50px; align-items:start; }
+  @media (max-width:900px){ .co-wrap{ grid-template-columns:1fr; } }
+  .order-summary{ border:1px solid var(--line); padding:26px; position:sticky; top:110px; }
+  .order-summary .line{ display:flex; justify-content:space-between; font-family:var(--sans); font-size:0.92rem; padding:8px 0; }
+  .order-summary .line.total{ border-top:1px solid var(--line); margin-top:10px; padding-top:16px; font-weight:600; font-size:1.05rem; color:var(--navy); }
+  .pay-option{ border:1px solid var(--line); padding:16px; margin-bottom:12px; cursor:pointer; }
+  .pay-option.selected{ border-color: var(--gold); background: #FBF4E4; }
+  .pay-option input{ margin-right:10px; }
+  .pay-details{ font-family:var(--sans); font-size:0.86rem; color:#5a5773; margin-top:10px; display:none; }
+  .pay-option.selected .pay-details{ display:block; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav-row">
+    <a href="index.html" class="logo"><img src="https://i.etsystatic.com/62419654/r/isla/fb412b/82714613/isla_500x500.82714613_75ymty06.jpg" alt="Gems Mark — The Elegance" class="logo-img"></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="blog.html">Stone Guide</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="account.html">Account</a>
+      <a href="cart.html">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="wrap section">
+  <span class="eyebrow-mark">Almost There</span>
+  <h1 style="margin-top:8px;">Checkout</h1>
+
+  <div class="co-wrap" style="margin-top:30px;" id="checkout-root"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-bottom" style="border-top:none; justify-content:center;">
+    <span>© 2026 Gems Mark. All rights reserved.</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/products-data.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/main.js"></script>
+<script>
+  const cart = getCart();
+  const root = document.getElementById('checkout-root');
+
+  if (!cart.length){
+    root.innerHTML = `<div class="empty-state"><h3>Your cart is empty</h3><a href="shop.html" class="btn btn-gold" style="margin-top:16px;">Shop Now</a></div>`;
+  } else {
+    let total = 0;
+    const lines = cart.map(item => {
+      const p = findProduct(item.id);
+      const lineTotal = p.price * item.qty;
+      total += lineTotal;
+      return `<div class="line"><span>${p.title} × ${item.qty}</span><span>$${lineTotal.toFixed(2)}</span></div>`;
+    }).join('');
+
+    root.innerHTML = `
+      <div>
+        <div id="checkout-msg"></div>
+        <form onsubmit="submitOrder(event)">
+          <h3 style="margin-bottom:16px;">Shipping Details</h3>
+          <div class="field-row">
+            <div class="field"><label for="f-name">Full name</label><input type="text" id="f-name" required></div>
+            <div class="field"><label for="f-email">Email</label><input type="email" id="f-email" required></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="f-phone">Phone (with country code)</label><input type="text" id="f-phone" placeholder="+1 555 000 0000" required></div>
+            <div class="field"><label for="f-city">City</label><input type="text" id="f-city" required></div>
+          </div>
+          <div class="field"><label for="f-address">Full address</label><input type="text" id="f-address" required></div>
+          <div class="field-row">
+            <div class="field"><label for="f-country">Country</label><input type="text" id="f-country" required></div>
+            <div class="field"><label for="f-zip">ZIP / postal code</label><input type="text" id="f-zip" required></div>
+          </div>
+          <div class="field"><label for="f-notes">Order notes (ring size, engraving, etc.)</label><textarea id="f-notes" rows="3"></textarea></div>
+
+          <h3 style="margin:26px 0 14px;">Payment Method</h3>
+          <label class="pay-option selected" id="opt-bank" onclick="selectPay('bank')">
+            <input type="radio" name="pay" checked> Bank Transfer
+            <div class="pay-details">Bank account details will be sent to your email after you place the order (seller account info to be added here).</div>
+          </label>
+          <label class="pay-option" id="opt-payoneer" onclick="selectPay('payoneer')">
+            <input type="radio" name="pay"> Payoneer
+            <div class="pay-details">Payoneer payment details will be sent to your email after you place the order (seller account info to be added here).</div>
+          </label>
+
+          <button type="submit" class="btn btn-gold btn-block" style="margin-top:24px;" id="place-order-btn">Place Order</button>
+          <p class="form-note" style="margin-top:10px;">By placing this order you agree to pay via the selected method within 48 hours. We'll confirm and begin crafting once payment is received.</p>
+        </form>
+      </div>
+
+      <div class="order-summary">
+        <h3 style="margin-bottom:16px;">Order Summary</h3>
+        ${lines}
+        <div class="line total"><span>Total</span><span>$${total.toFixed(2)}</span></div>
+        <div class="line"><span>≈ PKR</span><span>${pkr(total)}</span></div>
+      </div>
+    `;
+  }
+
+  let payMethod = 'bank';
+  function selectPay(method){
+    payMethod = method;
+    document.getElementById('opt-bank').classList.toggle('selected', method==='bank');
+    document.getElementById('opt-payoneer').classList.toggle('selected', method==='payoneer');
+  }
+
+  async function submitOrder(e){
+    e.preventDefault();
+    const btn = document.getElementById('place-order-btn');
+    const msg = document.getElementById('checkout-msg');
+    btn.disabled = true; btn.textContent = 'Placing order…';
+
+    let total = 0;
+    const items = cart.map(item => {
+      const p = findProduct(item.id);
+      total += p.price * item.qty;
+      return { id: p.id, title: p.title, qty: item.qty, price_usd: p.price };
+    });
+
+    const order = {
+      fullName: document.getElementById('f-name').value,
+      email: document.getElementById('f-email').value,
+      phone: document.getElementById('f-phone').value,
+      address: document.getElementById('f-address').value,
+      city: document.getElementById('f-city').value,
+      country: document.getElementById('f-country').value,
+      zip: document.getElementById('f-zip').value,
+      notes: document.getElementById('f-notes').value,
+      items,
+      totalUsd: total,
+      totalPkr: Math.round(total * FX_RATE),
+      paymentMethod: payMethod,
+    };
+
+    const { error } = await createOrder(order);
+    btn.disabled = false; btn.textContent = 'Place Order';
+
+    if (error){
+      document.getElementById('checkout-msg').innerHTML = `<div class="form-msg err">${error}</div>`;
+      return;
+    }
+
+    clearCart();
+    document.getElementById('checkout-root').innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1;">
+        <span class="eyebrow-mark">Thank You</span>
+        <h1 style="margin:10px 0 14px;">Order Placed</h1>
+        <p class="lede">We've received your order. Payment instructions for ${payMethod === 'bank' ? 'Bank Transfer' : 'Payoneer'} have been sent to your email. Once payment is confirmed, we'll begin crafting your piece.</p>
+        <div style="display:flex; gap:14px; margin-top:20px;">
+          <a href="account.html" class="btn btn-gold">Track This Order</a>
+          <a href="shop.html" class="btn btn-outline">Continue Shopping</a>
+        </div>
+      </div>`;
+  }
+</script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Cart — Gems Mark</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .cart-row{ display:grid; grid-template-columns: 90px 1fr auto auto auto; gap:18px; align-items:center; padding: 18px 0; border-bottom:1px solid var(--line); }
+  .cart-row img{ width:90px; height:90px; object-fit:cover; border:1px solid var(--line); }
+  @media (max-width:700px){ .cart-row{ grid-template-columns: 70px 1fr; row-gap:10px; } }
+  .cart-summary{ max-width:360px; margin-left:auto; margin-top:30px; }
+  .cart-summary .row{ display:flex; justify-content:space-between; font-family:var(--sans); padding:8px 0; }
+  .cart-summary .row.total{ border-top:1px solid var(--line); margin-top:8px; padding-top:16px; font-size:1.1rem; font-weight:600; color:var(--navy); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav-row">
+    <a href="index.html" class="logo"><img src="https://i.etsystatic.com/62419654/r/isla/fb412b/82714613/isla_500x500.82714613_75ymty06.jpg" alt="Gems Mark — The Elegance" class="logo-img"></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="blog.html">Stone Guide</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="account.html">Account</a>
+      <a href="cart.html" class="active">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="wrap section">
+  <span class="eyebrow-mark">Your Selection</span>
+  <h1 style="margin-top:8px;">Cart</h1>
+  <div id="cart-root" style="margin-top:26px;"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-bottom" style="border-top:none; justify-content:center;">
+    <span>© 2026 Gems Mark. All rights reserved.</span>
+  </div>
+</footer>
+
+<script src="js/products-data.js"></script>
+<script src="js/main.js"></script>
+<script>
+  function render(){
+    const cart = getCart();
+    const root = document.getElementById('cart-root');
+    if (!cart.length){
+      root.innerHTML = `<div class="empty-state"><h3>Your cart is empty</h3><p class="small">Browse the collection to find a piece you love.</p><a href="shop.html" class="btn btn-gold" style="margin-top:16px;">Shop Now</a></div>`;
+      return;
+    }
+    let total = 0;
+    const rows = cart.map(item => {
+      const p = findProduct(item.id);
+      if (!p) return '';
+      const lineTotal = p.price * item.qty;
+      total += lineTotal;
+      return `
+      <div class="cart-row">
+        <img src="${productImage(p)}" alt="${p.title}">
+        <div>
+          <h4 style="font-size:1.05rem; margin-bottom:4px;">${p.title}</h4>
+          <div class="small">$${p.price.toFixed(2)} each</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn btn-outline" style="padding:6px 12px;" onclick="setQty('${p.id}', ${item.qty - 1}); render();">−</button>
+          <span style="font-family:var(--sans);">${item.qty}</span>
+          <button class="btn btn-outline" style="padding:6px 12px;" onclick="setQty('${p.id}', ${item.qty + 1}); render();">+</button>
+        </div>
+        <div style="font-family:var(--sans); font-weight:600;">$${lineTotal.toFixed(2)}</div>
+        <button class="small" style="background:none;border:none;text-decoration:underline;" onclick="removeFromCart('${p.id}'); render();">Remove</button>
+      </div>`;
+    }).join('');
+
+    root.innerHTML = `
+      ${rows}
+      <div class="cart-summary">
+        <div class="row"><span>Subtotal</span><span>$${total.toFixed(2)}</span></div>
+        <div class="row"><span>≈ PKR</span><span>${pkr(total)}</span></div>
+        <div class="row total"><span>Total</span><span>$${total.toFixed(2)}</span></div>
+        <a href="checkout.html" class="btn btn-gold btn-block" style="margin-top:20px;">Proceed to Checkout</a>
+      </div>`;
+  }
+  render();
+</script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+</body>
+</html>

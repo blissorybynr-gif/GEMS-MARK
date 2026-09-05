@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account — Gems Mark</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav-row">
+    <a href="index.html" class="logo"><img src="https://i.etsystatic.com/62419654/r/isla/fb412b/82714613/isla_500x500.82714613_75ymty06.jpg" alt="Gems Mark — The Elegance" class="logo-img"></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="blog.html">Stone Guide</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="account.html" class="active">Account</a>
+      <a href="cart.html">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="wrap section" id="account-root">
+  <p class="small">Loading your account…</p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-bottom" style="border-top:none; justify-content:center;">
+    <span>© 2026 Gems Mark. All rights reserved.</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/main.js"></script>
+<script>
+  async function render(){
+    const root = document.getElementById('account-root');
+    const sb = getSupabase();
+
+    if (!sb){
+      root.innerHTML = `
+        <div class="empty-state">
+          <span class="eyebrow-mark">Account &amp; Order Tracking</span>
+          <h1 style="margin:10px 0 14px;">Not Connected Yet</h1>
+          <p class="lede">This page will show your order history and live tracking status once Supabase is connected — see js/supabase-client.js for the 2-minute setup.</p>
+          <a href="shop.html" class="btn btn-outline" style="margin-top:18px;">Continue Shopping</a>
+        </div>`;
+      return;
+    }
+
+    const user = await getCurrentUser();
+    if (!user){
+      root.innerHTML = `
+        <div class="empty-state">
+          <span class="eyebrow-mark">Account</span>
+          <h1 style="margin:10px 0 14px;">You're Not Logged In</h1>
+          <p class="lede">Log in to view your order history and tracking status.</p>
+          <div style="display:flex; gap:14px; margin-top:20px;">
+            <a href="login.html" class="btn btn-gold">Log In</a>
+            <a href="signup.html" class="btn btn-outline">Sign Up</a>
+          </div>
+        </div>`;
+      return;
+    }
+
+    root.innerHTML = `
+      <div class="section-head">
+        <div>
+          <span class="eyebrow-mark">Welcome back</span>
+          <h1 style="margin-top:8px;">${user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : user.email}</h1>
+        </div>
+        <button class="btn btn-outline" onclick="logout()">Log Out</button>
+      </div>
+      <h2 style="margin-top:20px;">Your Orders</h2>
+      <div class="table-wrap" style="margin-top:20px;" id="orders-table"></div>
+    `;
+
+    const { data, error } = await getMyOrders();
+    const tableWrap = document.getElementById('orders-table');
+    if (error){
+      tableWrap.innerHTML = `<p class="small">${error}</p>`;
+    } else if (!data || !data.length){
+      tableWrap.innerHTML = `<div class="empty-state"><h3>No orders yet</h3><p class="small">Once you place an order it'll show up here with live tracking status.</p><a href="shop.html" class="btn btn-gold" style="margin-top:16px;">Start Shopping</a></div>`;
+    } else {
+      tableWrap.innerHTML = `
+        <table>
+          <thead><tr><th>Order</th><th>Date</th><th>Total</th><th>Status</th><th>Courier</th><th>Tracking #</th></tr></thead>
+          <tbody>
+            ${data.map(o => `
+              <tr>
+                <td>#${o.id.slice(0,8)}</td>
+                <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                <td>$${Number(o.total_usd).toFixed(2)}</td>
+                <td><span class="status-pill status-${o.status}">${o.status}</span></td>
+                <td>${o.courier || '—'}</td>
+                <td>${o.tracking_number || '—'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
+  }
+
+  async function logout(){
+    await signOutBuyer();
+    window.location.href = 'index.html';
+  }
+
+  render();
+</script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Product — Gems Mark</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .pd-wrap{ display:grid; grid-template-columns: 1fr 1fr; gap: 56px; padding: 44px 0 80px; }
+  @media (max-width:880px){ .pd-wrap{ grid-template-columns:1fr; gap:28px; } }
+  .pd-main-img{ aspect-ratio:1/1; overflow:hidden; border:1px solid var(--line); background:var(--paper-dim); }
+  .pd-main-img img{ width:100%; height:100%; object-fit:cover; }
+  .pd-thumbs{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .pd-thumbs img{ width:70px; height:70px; object-fit:cover; border:1px solid var(--line); cursor:pointer; }
+  .pd-thumbs img.active{ border-color: var(--gold); }
+  .pd-meta-list{ margin: 22px 0; font-family:var(--sans); font-size:0.92rem; }
+  .pd-meta-list div{ display:flex; justify-content:space-between; padding: 10px 0; border-bottom:1px solid var(--line); }
+  .pd-qty{ display:flex; align-items:center; gap:14px; margin: 22px 0; }
+  .pd-qty button{ width:36px; height:36px; border:1px solid var(--line); background:#fff; font-size:1.1rem; }
+  .pd-qty span{ font-family:var(--sans); min-width:20px; text-align:center; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav-row">
+    <a href="index.html" class="logo"><img src="https://i.etsystatic.com/62419654/r/isla/fb412b/82714613/isla_500x500.82714613_75ymty06.jpg" alt="Gems Mark — The Elegance" class="logo-img"></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="blog.html">Stone Guide</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="account.html">Account</a>
+      <a href="cart.html">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="wrap" id="pd-root"></main>
+
+<section class="wrap section" style="padding-top:0;">
+  <div class="section-head"><h2>You May Also Like</h2></div>
+  <div class="grid" id="related-grid"></div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <div class="footer-logo">GEMS<span style="color:var(--gold)">MARK</span></div>
+      <p style="margin-top:14px; max-width:320px;">Handcrafted 925 sterling silver rings and pendants set with natural gemstones. Designed in Multan, Pakistan — worn worldwide.</p>
+    </div>
+    <div>
+      <h5>Shop</h5>
+      <a href="shop.html">All Rings</a>
+      <a href="shop.html?type=pendant">Pendants</a>
+      <a href="blog.html">Stone Guide</a>
+    </div>
+    <div>
+      <h5>Support</h5>
+      <a href="contact.html">Contact Us</a>
+      <a href="account.html">Track an Order</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+    </div>
+    <div>
+      <h5>Reach Us</h5>
+      <p>gemsmarkjewelry@gmail.com</p>
+      <p>WhatsApp: +92 315 6048408</p>
+      <p>Multan, Pakistan</p>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© 2026 Gems Mark. All rights reserved.</span>
+    <span>THE ELEGANCE</span>
+  </div>
+</footer>
+
+<script src="js/products-data.js"></script>
+<script src="js/stones-data.js"></script>
+<script src="js/main.js"></script>
+<script>
+  const id = new URLSearchParams(location.search).get('id');
+  const p = findProduct(id);
+  const root = document.getElementById('pd-root');
+
+  if (!p){
+    root.innerHTML = `<div class="empty-state"><h3>Piece not found</h3><p><a href="shop.html" class="btn btn-outline" style="margin-top:14px;">Back to Shop</a></p></div>`;
+  } else {
+    document.getElementById('page-title').textContent = p.title + ' — Gems Mark';
+    const images = p.images && p.images.length ? p.images : [productImage(p)];
+    const info = STONE_INFO[p.stone];
+
+    root.innerHTML = `
+    <div class="breadcrumb"><a href="shop.html">Shop</a> / ${info ? info.label : p.stone}</div>
+    <div class="pd-wrap">
+      <div>
+        <div class="pd-main-img"><img id="main-img" src="${images[0]}" alt="${p.title}"></div>
+        ${images.length > 1 ? `<div class="pd-thumbs">${images.map((im,i)=>`<img src="${im}" class="${i===0?'active':''}" onclick="document.getElementById('main-img').src='${im}'; document.querySelectorAll('.pd-thumbs img').forEach(t=>t.classList.remove('active')); this.classList.add('active');">`).join('')}</div>` : ''}
+      </div>
+      <div>
+        <span class="eyebrow-mark">${info ? info.label : p.stone} · ${p.type}</span>
+        <h1 style="font-size:clamp(1.8rem,3vw,2.4rem); margin-top:10px;">${p.title}</h1>
+        ${p.isSample ? `<p class="form-msg err" style="margin-top:16px;">Sample placeholder listing — replace with the real GemsMark pendant photos before launch.</p>` : ''}
+        <div class="price-row" style="margin-top:18px; font-size:1.3rem;">
+          <span class="price-usd">$${p.price.toFixed(2)}</span>
+          ${p.originalPrice ? `<span class="price-strike">$${p.originalPrice.toFixed(2)}</span>` : ''}
+        </div>
+        <div class="price-pkr" style="font-size:1rem; margin-top:4px;">≈ PKR ${pkr(p.price)}</div>
+
+        <p class="lede" style="margin-top:20px;">${p.description}</p>
+
+        <div class="pd-meta-list">
+          <div><span>Material</span><span>${p.material}</span></div>
+          ${p.sizesNote ? `<div><span>Sizes</span><span style="text-align:right; max-width:60%;">${p.sizesNote}</span></div>` : ''}
+          <div><span>Processing time</span><span>${p.processing || '10–12 business days'}</span></div>
+          <div><span>Shipping</span><span>FedEx / SkyNet / UPS / DHL worldwide</span></div>
+        </div>
+
+        <div class="field">
+          <label for="ring-size">Ring size / notes (optional)</label>
+          <input type="text" id="ring-size" placeholder="e.g. US 8, or custom engraving request">
+        </div>
+
+        <div class="pd-qty">
+          <button onclick="changeQty(-1)">−</button>
+          <span id="qty">1</span>
+          <button onclick="changeQty(1)">+</button>
+        </div>
+
+        <button class="btn btn-gold btn-block" onclick="addProductToCart()">Add to Cart</button>
+        <p class="form-note" style="margin-top:14px;">Payment via Bank Transfer or Payoneer — instructions shown at checkout. Need something custom? <a href="contact.html" style="color:var(--navy); text-decoration:underline;">Message us on WhatsApp</a>.</p>
+      </div>
+    </div>`;
+
+    // related
+    const related = PRODUCTS.filter(x => x.stone === p.stone && x.id !== p.id).slice(0,3);
+    const fallback = related.length ? related : PRODUCTS.filter(x => x.id !== p.id).slice(0,3);
+    document.getElementById('related-grid').innerHTML = fallback.map(rp => {
+      const rinfo = STONE_INFO[rp.stone];
+      return `<a href="product.html?id=${rp.id}" class="product-card">
+        <div class="product-media"><img src="${productImage(rp)}" alt="${rp.title}"></div>
+        <div class="product-info">
+          <div class="stone">${rinfo?rinfo.label:rp.stone}</div>
+          <h4>${rp.title}</h4>
+          <div class="price-row"><span class="price-usd">$${rp.price.toFixed(2)}</span></div>
+        </div>
+      </a>`;
+    }).join('');
+  }
+
+  let qty = 1;
+  function changeQty(d){
+    qty = Math.max(1, qty + d);
+    document.getElementById('qty').textContent = qty;
+  }
+  function addProductToCart(){
+    addToCart(p.id, qty);
+    alert(`Added ${qty} × "${p.title}" to your cart.`);
+  }
+</script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+</body>
+</html>
