@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log In — Gems Mark</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav-row">
+    <a href="index.html" class="logo"><img src="https://i.etsystatic.com/62419654/r/isla/fb412b/82714613/isla_500x500.82714613_75ymty06.jpg" alt="Gems Mark — The Elegance" class="logo-img"></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="blog.html">Stone Guide</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="account.html">Account</a>
+      <a href="cart.html">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="wrap section" style="max-width:520px;">
+  <div style="text-align:left; margin-bottom:30px;">
+    <span class="eyebrow-mark">Welcome Back</span>
+    <h1 style="font-size:2.2rem; margin-top:8px;">Log In</h1>
+  </div>
+
+  <form class="form-shell" style="margin:0;" onsubmit="handleLogin(event)">
+    <div id="login-msg"></div>
+    <div class="field">
+      <label for="l-email">Email</label>
+      <input type="email" id="l-email" required>
+    </div>
+    <div class="field">
+      <label for="l-password">Password</label>
+      <input type="password" id="l-password" required>
+    </div>
+    <button type="submit" class="btn btn-gold btn-block" id="login-btn">Log In</button>
+    <p class="form-note" style="text-align:center; margin-top:18px;">Don't have an account? <a href="signup.html" style="color:var(--navy); text-decoration:underline;">Sign up</a></p>
+  </form>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-bottom" style="border-top:none; justify-content:center;">
+    <span>© 2026 Gems Mark. All rights reserved.</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/main.js"></script>
+<script>
+  async function handleLogin(e){
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    const msg = document.getElementById('login-msg');
+    msg.innerHTML = '';
+    btn.disabled = true; btn.textContent = 'Logging in…';
+
+    const email = document.getElementById('l-email').value;
+    const password = document.getElementById('l-password').value;
+    const { error } = await signInBuyer(email, password);
+
+    btn.disabled = false; btn.textContent = 'Log In';
+    if (error){
+      msg.innerHTML = `<div class="form-msg err">${error}</div>`;
+    } else {
+      window.location.href = 'account.html';
+    }
+  }
+</script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+</body>
+</html>

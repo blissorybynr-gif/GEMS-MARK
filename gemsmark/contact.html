@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Gems Mark</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav-row">
+    <a href="index.html" class="logo"><img src="https://i.etsystatic.com/62419654/r/isla/fb412b/82714613/isla_500x500.82714613_75ymty06.jpg" alt="Gems Mark — The Elegance" class="logo-img"></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="blog.html">Stone Guide</a>
+      <a href="contact.html" class="active">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="account.html">Account</a>
+      <a href="cart.html">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap page-hero">
+    <span class="eyebrow-mark">We'd Love To Hear From You</span>
+    <h1 style="font-size:clamp(2rem,4vw,2.8rem);">Contact &amp; Custom Orders</h1>
+  </div>
+
+  <section class="wrap section split">
+    <div>
+      <h2>Reach Us Directly</h2>
+      <p class="lede" style="margin: 14px 0 26px;">For custom order requests, sizing questions, or anything else — WhatsApp is the fastest way to reach us.</p>
+      <div class="pd-meta-list" style="margin-top:0;">
+        <div><span>Email</span><span><a href="mailto:gemsmarkjewelry@gmail.com" style="text-decoration:underline;">gemsmarkjewelry@gmail.com</a></span></div>
+        <div><span>WhatsApp</span><span><a href="https://wa.me/923156048408" target="_blank" style="text-decoration:underline;">+92 315 6048408</a></span></div>
+        <div><span>Location</span><span>Multan, Pakistan</span></div>
+        <div><span>Ships worldwide via</span><span>FedEx, SkyNet, UPS, DHL</span></div>
+      </div>
+      <a href="https://wa.me/923156048408" target="_blank" class="btn btn-gold" style="margin-top:26px;">Chat on WhatsApp</a>
+      <button type="button" class="btn btn-outline-gold" style="margin-top:14px;" onclick="openCustomOrderChat()">💬 Start a Custom Order via Chat</button>
+      <button onclick="if(window.botpressWebChat){window.botpressWebChat.open();}" class="btn btn-outline-gold" style="margin-top:14px;">Start a Custom Order Chat</button>
+    </div>
+
+    <div>
+      <h2>Send a Message</h2>
+      <form class="form-shell" style="margin:20px 0 0;" onsubmit="handleContact(event)">
+        <div id="contact-msg"></div>
+        <div class="field">
+          <label for="c-name">Full name</label>
+          <input type="text" id="c-name" required>
+        </div>
+        <div class="field">
+          <label for="c-email">Email</label>
+          <input type="email" id="c-email" required>
+        </div>
+        <div class="field">
+          <label for="c-topic">This is about</label>
+          <select id="c-topic">
+            <option>A custom order request</option>
+            <option>An existing order</option>
+            <option>Sizing / product question</option>
+            <option>Something else</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="c-message">Message</label>
+          <textarea id="c-message" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-gold btn-block">Send Message</button>
+        <p class="form-note">This opens your email app addressed to gemsmarkjewelry@gmail.com. Prefer instant replies? Use WhatsApp above.</p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <div class="footer-logo">GEMS<span style="color:var(--gold)">MARK</span></div>
+      <p style="margin-top:14px; max-width:320px;">Handcrafted 925 sterling silver rings and pendants set with natural gemstones. Designed in Multan, Pakistan — worn worldwide.</p>
+    </div>
+    <div>
+      <h5>Shop</h5>
+      <a href="shop.html">All Rings</a>
+      <a href="shop.html?type=pendant">Pendants</a>
+      <a href="blog.html">Stone Guide</a>
+    </div>
+    <div>
+      <h5>Support</h5>
+      <a href="contact.html">Contact Us</a>
+      <a href="account.html">Track an Order</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+    </div>
+    <div>
+      <h5>Reach Us</h5>
+      <p>gemsmarkjewelry@gmail.com</p>
+      <p>WhatsApp: +92 315 6048408</p>
+      <p>Multan, Pakistan</p>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© 2026 Gems Mark. All rights reserved.</span>
+    <span>THE ELEGANCE</span>
+  </div>
+</footer>
+<script src="js/main.js"></script>
+<script>
+  function handleContact(e){
+    e.preventDefault();
+    const name = document.getElementById('c-name').value;
+    const email = document.getElementById('c-email').value;
+    const topic = document.getElementById('c-topic').value;
+    const message = document.getElementById('c-message').value;
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nTopic: ${topic}\n\n${message}`);
+    window.location.href = `mailto:gemsmarkjewelry@gmail.com?subject=${encodeURIComponent('Website enquiry: ' + topic)}&body=${body}`;
+  }
+
+  function openCustomOrderChat(){
+    // Opens the Botpress webchat widget so the visitor can start the
+    // custom-order conversation right away, instead of just seeing the icon.
+    if (window.botpressWebChat){
+      window.botpressWebChat.sendEvent({ type: 'show' });
+      window.botpressWebChat.sendEvent({ type: 'proactive-trigger' });
+    } else {
+      alert('Chat is loading — please try again in a moment, or use WhatsApp above.');
+    }
+  }
+</script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+</body>
+</html>

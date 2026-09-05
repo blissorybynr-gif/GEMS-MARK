@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Stone Guide — Gems Mark</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .stone-post-hero{ width:100%; aspect-ratio: 16/7; object-fit: cover; border: 1px solid var(--line); margin-bottom: 28px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav-row">
+    <a href="index.html" class="logo"><img src="https://i.etsystatic.com/62419654/r/isla/fb412b/82714613/isla_500x500.82714613_75ymty06.jpg" alt="Gems Mark — The Elegance" class="logo-img"></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="blog.html" class="active">Stone Guide</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="account.html">Account</a>
+      <a href="cart.html">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="wrap section center-narrow" id="post-root"></main>
+
+<section class="wrap section" style="padding-top:0;">
+  <div class="section-head"><h2>Shop This Stone</h2></div>
+  <div class="grid" id="stone-products"></div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <div class="footer-logo">GEMS<span style="color:var(--gold)">MARK</span></div>
+      <p style="margin-top:14px; max-width:320px;">Handcrafted 925 sterling silver rings and pendants set with natural gemstones. Designed in Multan, Pakistan — worn worldwide.</p>
+    </div>
+    <div>
+      <h5>Shop</h5>
+      <a href="shop.html">All Rings</a>
+      <a href="shop.html?type=pendant">Pendants</a>
+      <a href="blog.html">Stone Guide</a>
+    </div>
+    <div>
+      <h5>Support</h5>
+      <a href="contact.html">Contact Us</a>
+      <a href="account.html">Track an Order</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+    </div>
+    <div>
+      <h5>Reach Us</h5>
+      <p>gemsmarkjewelry@gmail.com</p>
+      <p>WhatsApp: +92 315 6048408</p>
+      <p>Multan, Pakistan</p>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© 2026 Gems Mark. All rights reserved.</span>
+    <span>THE ELEGANCE</span>
+  </div>
+</footer>
+
+<script src="js/products-data.js"></script>
+<script src="js/stones-data.js"></script>
+<script src="js/main.js"></script>
+<script>
+  const slug = new URLSearchParams(location.search).get('stone');
+  const stone = STONE_GUIDE.find(s => s.slug === slug);
+  const root = document.getElementById('post-root');
+
+  if (!stone){
+    root.innerHTML = `<div class="empty-state"><h3>Stone not found</h3><a href="blog.html" class="btn btn-outline" style="margin-top:14px;">Back to Stone Guide</a></div>`;
+  } else {
+    document.getElementById('page-title').textContent = stone.name + ' — Gems Mark Stone Guide';
+    root.innerHTML = `
+      <div class="breadcrumb"><a href="blog.html">Stone Guide</a> / ${stone.name}</div>
+      <img class="stone-post-hero" src="${stoneGuideImage(stone.slug)}" alt="${stone.name} gemstone">
+      <span class="eyebrow-mark">${stone.birthstone ? 'Birthstone for ' + stone.birthstone : 'Featured Stone'}</span>
+      <h1 style="margin-top:10px;">${stone.name}</h1>
+      <p class="lede" style="margin-top:20px; font-size:1.1rem;">${stone.text}</p>
+      <a href="shop.html?stone=${stone.slug}" class="btn btn-gold" style="margin-top:24px;">Shop ${stone.name} Pieces</a>
+    `;
+
+    const items = PRODUCTS.filter(p => p.stone === stone.slug);
+    document.getElementById('stone-products').innerHTML = items.length ? items.map(p => `
+      <a href="product.html?id=${p.id}" class="product-card">
+        <div class="product-media"><img src="${productImage(p)}" alt="${p.title}"></div>
+        <div class="product-info">
+          <h4>${p.title}</h4>
+          <div class="price-row"><span class="price-usd">$${p.price.toFixed(2)}</span></div>
+          <div class="price-pkr">≈ PKR ${pkr(p.price)}</div>
+        </div>
+      </a>`).join('') : `<p class="small">No pieces with this stone are listed yet — check back soon or <a href="contact.html">ask about a custom order</a>.</p>`;
+  }
+</script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+</body>
+</html>

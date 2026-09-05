@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Stone Guide — Gems Mark</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav-row">
+    <a href="index.html" class="logo"><img src="https://i.etsystatic.com/62419654/r/isla/fb412b/82714613/isla_500x500.82714613_75ymty06.jpg" alt="Gems Mark — The Elegance" class="logo-img"></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="blog.html" class="active">Stone Guide</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="account.html">Account</a>
+      <a href="cart.html">Cart <span class="cart-count">0</span></a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap page-hero center-narrow">
+    <span class="eyebrow-mark">The Blog</span>
+    <h1 style="font-size:clamp(2rem,4vw,2.8rem);">A Guide to Gemstones: Meanings, Beauty, and Care</h1>
+    <p class="lede" style="margin-top:14px;">Silver rings have a timeless elegance on their own, but pair them with a gemstone and each piece takes on a personality of its own. Here's a guide to some of the most loved gemstones you'll find in handcrafted silver jewelry.</p>
+  </div>
+
+  <section class="wrap section">
+    <div class="grid" id="stone-grid"></div>
+  </section>
+
+  <hr class="hairline wrap">
+
+  <section class="wrap section center-narrow">
+    <span class="eyebrow-mark">Care Guide</span>
+    <h2>Caring for Gemstone Silver Rings</h2>
+    <p class="lede" style="margin: 14px 0 26px;">However captivating a gemstone is, it needs a little care to stay that way.</p>
+    <ol class="numbered-list" id="care-list"></ol>
+  </section>
+
+  <section class="wrap section split" style="padding-top:0;">
+    <img src="https://i.etsystatic.com/62419654/r/il/d7146f/7929808567/il_794xN.7929808567_ath0.jpg" alt="Natural emerald ring by Gems Mark">
+    <div>
+      <span class="eyebrow-mark">Finding Your Stone</span>
+      <h2>Every Stone, A Personality</h2>
+      <p class="lede" style="margin-top:14px;">Whether you're drawn to the calm of moonstone, the warmth of citrine, or the ever-changing shimmer of labradorite, there's a gemstone to match every personality and occasion.</p>
+      <a href="shop.html" class="btn btn-gold" style="margin-top:18px;">Browse the Collection</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <div class="footer-logo">GEMS<span style="color:var(--gold)">MARK</span></div>
+      <p style="margin-top:14px; max-width:320px;">Handcrafted 925 sterling silver rings and pendants set with natural gemstones. Designed in Multan, Pakistan — worn worldwide.</p>
+    </div>
+    <div>
+      <h5>Shop</h5>
+      <a href="shop.html">All Rings</a>
+      <a href="shop.html?type=pendant">Pendants</a>
+      <a href="blog.html">Stone Guide</a>
+    </div>
+    <div>
+      <h5>Support</h5>
+      <a href="contact.html">Contact Us</a>
+      <a href="account.html">Track an Order</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+    </div>
+    <div>
+      <h5>Reach Us</h5>
+      <p>gemsmarkjewelry@gmail.com</p>
+      <p>WhatsApp: +92 315 6048408</p>
+      <p>Multan, Pakistan</p>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© 2026 Gems Mark. All rights reserved.</span>
+    <span>THE ELEGANCE</span>
+  </div>
+</footer>
+
+<script src="js/products-data.js"></script>
+<script src="js/stones-data.js"></script>
+<script src="js/main.js"></script>
+<script>
+  document.getElementById('stone-grid').innerHTML = STONE_GUIDE.map(s => `
+    <a href="blog-post.html?stone=${s.slug}" class="stone-card">
+      <img class="stone-card-img" src="${stoneGuideImage(s.slug)}" alt="${s.name} gemstone">
+      <div class="stone-card-body">
+        <div class="birthstone">${s.birthstone ? 'Birthstone for ' + s.birthstone : 'Featured Stone'}</div>
+        <h3>${s.name}</h3>
+        <p>${s.text.slice(0,130)}…</p>
+      </div>
+    </a>`).join('');
+
+  document.getElementById('care-list').innerHTML = STONE_CARE.map(c => `<li>${c}</li>`).join('');
+</script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/04/13/20260904134445-HK02BA4N.js" defer></script>
+</body>
+</html>
